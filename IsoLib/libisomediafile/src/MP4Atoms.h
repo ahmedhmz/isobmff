@@ -155,7 +155,8 @@ enum
     MP4SegmentTypeAtomType                              = MP4_FOUR_CHAR_CODE( 's', 't', 'y', 'p' ),
     MP4SegmentIndexAtomType                             = MP4_FOUR_CHAR_CODE( 's', 'i', 'd', 'x' ),
     MP4SubsegmentIndexAtomType                          = MP4_FOUR_CHAR_CODE( 's', 's', 'i', 'x' ),
-    MP4ProducerReferenceTimeAtomType                    = MP4_FOUR_CHAR_CODE( 'p', 'r', 'f', 't' )
+    MP4ProducerReferenceTimeAtomType                    = MP4_FOUR_CHAR_CODE( 'p', 'r', 'f', 't' ),
+	MP4HEV1SampleEntryAtomType							= MP4_FOUR_CHAR_CODE( 'h', 'e', 'v', '1' )
 
 }; 
 
