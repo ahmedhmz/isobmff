@@ -359,6 +359,7 @@
     <ClCompile Include="..\..\..\src\ObjectDescriptorMediaHeader.c" />
     <ClCompile Include="..\..\..\src\ODUpdateCommand.c" />
     <ClCompile Include="..\..\..\src\PaddingBitsAtom.c" />
+    <ClCompile Include="..\..\..\src\PCMConfigAtom.c" />
     <ClCompile Include="..\..\..\src\QTMovies.c" />
     <ClCompile Include="..\..\..\src\SampleDescriptionAtom.c" />
     <ClCompile Include="..\..\..\src\SampleSizeAtom.c" />

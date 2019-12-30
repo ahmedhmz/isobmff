@@ -85,6 +85,8 @@ sources = \
 	ODUpdateCommand.c \
 	ObjectDescriptorAtom.c \
 	ObjectDescriptorMediaHeader.c \
+	PCMConfigAtom.c \
+	ProducerReferenceTimeAtom.c \
 	QTMovies.c \
 	RestrictedSchemeInfoAtom.c \
 	RestrictedVideoSampleEntry.c \
@@ -95,6 +97,9 @@ sources = \
 	SampleToChunkAtom.c \
 	SceneDescriptionMediaHeader.c \
 	SchemeTypeAtom.c \
+	SegmentIndexAtom.c \
+	SegmentTypeAtom.c \
+	SubsegmentIndexAtom.c \
 	ShadowSyncAtom.c \
 	SimpleFileMappingObject.c \
 	SoundMediaHeaderAtom.c \
