@@ -169,8 +169,11 @@ add_library(
     src/SingleItemTypeReferenceAtom.c
     src/SLConfigDescriptor.c
     src/SoundMediaHeaderAtom.c
+    src/SpatialRelationship2DDescriptionAtom.c
+    src/SpatialRelationship2DSourceAtom.c
     src/StereoVideoAtom.c
     src/StereoVideoGroupAtom.c
+    src/SubPictureRegionAtom.c
     src/SubSampleInformationAtom.c
     src/SubsegmentIndexAtom.c
     src/SyncSampleAtom.c

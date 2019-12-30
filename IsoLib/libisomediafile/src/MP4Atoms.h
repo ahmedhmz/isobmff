@@ -159,7 +159,10 @@ enum
     MP4SegmentTypeAtomType                              = MP4_FOUR_CHAR_CODE( 's', 't', 'y', 'p' ),
     MP4SegmentIndexAtomType                             = MP4_FOUR_CHAR_CODE( 's', 'i', 'd', 'x' ),
     MP4SubsegmentIndexAtomType                          = MP4_FOUR_CHAR_CODE( 's', 's', 'i', 'x' ),
-    MP4ProducerReferenceTimeAtomType                    = MP4_FOUR_CHAR_CODE( 'p', 'r', 'f', 't' )
+    MP4ProducerReferenceTimeAtomType                    = MP4_FOUR_CHAR_CODE( 'p', 'r', 'f', 't' ),
+	MP4SpatialRelationship2DSourceAtomType              = MP4_FOUR_CHAR_CODE( '2', 'd', 's', 'r' ),
+	MP4SubPictureRegionAtomType                    		= MP4_FOUR_CHAR_CODE( 's', 'p', 'r', 'g' ),
+	MP4SpatialRelationship2DDescriptionAtomType         = MP4_FOUR_CHAR_CODE( '2', 'd', 'c', 'c' )
 
 }; 
 
@@ -1894,6 +1897,47 @@ typedef struct MP4ProducerReferenceTimeAtom
 
 } MP4ProducerReferenceTimeAtom, *MP4ProducerReferenceTimeAtomPtr;
 
+typedef struct MP4SpatialRelationship2DSourceAtom
+{
+	MP4_FULL_ATOM
+
+	u32 totalWidth;
+	u32 totalHeight;
+	u32 sourceId;
+
+} MP4SpatialRelationship2DSourceAtom, *MP4SpatialRelationship2DSourceAtomPtr;
+
+typedef struct MP4SubPictureRegionAtom
+{
+	MP4_FULL_ATOM
+
+	u16 objectX;
+	u16 objectY;
+	u16 objectWidth;
+	u16 objectHeight;
+	u16 reserved;						/* bit(14) = 0 */	
+	u8 trackNotAloneFlag;				/* unsigned int(1) */
+	u8 trackNotMergeableFlag;			/* unsigned int(1) */
+
+} MP4SubPictureRegionAtom, *MP4SubPictureRegionAtomPtr;
+
+typedef struct MP4SpatialRelationship2DDescriptionAtom
+{
+
+	MP4_FULL_ATOM
+
+	u32 trackGroupID;								/* unsigned int(32), inherited from TrackGroupTypeAtom */
+
+	MP4AtomPtr spatialRelationship2DSource;
+	MP4AtomPtr subPictureRegion;					/* optional */
+
+	MP4LinkedList atomList;							/* optional (for MP4SubPictureRegionAtomPtr) */
+	
+	MP4Err(*addAtom)(struct MP4SpatialRelationship2DDescriptionAtom* self, MP4AtomPtr atom);
+
+} MP4SpatialRelationship2DDescriptionAtom, *MP4SpatialRelationship2DDescriptionAtomPtr;
+
+
 MP4Err MP4GetListEntryAtom( MP4LinkedList list, u32 atomType, MP4AtomPtr* outItem );
 MP4Err MP4DeleteListEntryAtom( MP4LinkedList list, u32 atomType );
 
@@ -1991,6 +2035,11 @@ MP4Err MP4CreateSegmentIndexAtom(MP4SegmentIndexAtomPtr *outAtom);
 MP4Err MP4CreateSubsegmentIndexAtom(MP4SubsegmentIndexAtomPtr *outAtom);
 MP4Err MP4CreateProducerReferenceTimeAtom(MP4ProducerReferenceTimeAtomPtr *outAtom);
 */
+
+MP4Err MP4CreateSpatialRelationship2DSourceAtom(MP4SpatialRelationship2DSourceAtomPtr *outAtom);
+MP4Err MP4CreateSubPictureRegionAtom(MP4SubPictureRegionAtomPtr *outAtom);
+MP4Err MP4CreateSpatialRelationship2DDescriptionAtom(MP4SpatialRelationship2DDescriptionAtomPtr *outAtom);
+
 #ifdef ISMACrypt
 MP4Err MP4CreateSecurityInfoAtom( MP4SecurityInfoAtomPtr *outAtom );
 MP4Err CreateISMAKMSAtom( ISMAKMSAtomPtr *outAtom );

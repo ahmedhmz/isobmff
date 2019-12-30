@@ -528,6 +528,16 @@ MP4Err MP4CreateAtom( u32 atomType, MP4AtomPtr *outAtom )
             err = MP4CreateProducerReferenceTimeAtom((MP4ProducerReferenceTimeAtomPtr *)&newAtom);
             break;
 */
+		case MP4SpatialRelationship2DSourceAtomType:
+			err = MP4CreateSpatialRelationship2DSourceAtom((MP4SpatialRelationship2DSourceAtomPtr *)&newAtom);
+			break;
+		case MP4SubPictureRegionAtomType:
+			err = MP4CreateSubPictureRegionAtom((MP4SubPictureRegionAtomPtr *)&newAtom);
+			break;
+		case MP4SpatialRelationship2DDescriptionAtomType:
+			err = MP4CreateSpatialRelationship2DDescriptionAtom((MP4SpatialRelationship2DDescriptionAtomPtr *)&newAtom);
+			break;
+			
 #ifdef ISMACrypt
 		case MP4SecurityInfoAtomType:
 			err = MP4CreateSecurityInfoAtom( (MP4SecurityInfoAtomPtr *) &newAtom );

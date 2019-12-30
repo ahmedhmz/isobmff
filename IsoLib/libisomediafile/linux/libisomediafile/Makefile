@@ -172,7 +172,9 @@ sources = \
 	SingleItemTypeReferenceAtom.c \
 	ItemPropertiesAtom.c \
 	ItemPropertyAssociationAtom.c \
-	ItemPropertyContainerAtom.c
+	ItemPropertyContainerAtom.c \
+	SpatialRelationship2DSourceAtom.c \
+	SubPictureRegionAtom.c
 
 
 

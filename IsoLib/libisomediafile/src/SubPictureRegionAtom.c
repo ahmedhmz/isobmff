@@ -1,5 +1,5 @@
 /*
-*This software module was originally developed by InterDigital, Inc.
+* This software module was originally developed by InterDigital, Inc.
 * in the course of development of MPEG-4.
 * This software module is an implementation of a part of one or
 * more MPEG-4 tools as specified by MPEG-4.
@@ -23,11 +23,12 @@
 * derivative works.
 */
 
+
 /**
- * @file StereoVideoAtom.c
+ * @file SubPictureRegionAtom.c
  * @author Ahmed Hamza <Ahmed.Hamza@InterDigital.com>
- * @date January 19, 2018
- * @brief Implements functions for reading and writing StereoVideoAtom instances.
+ * @date December 30, 2018
+ * @brief Implements functions for reading and writing SubPictureRegionAtom instances.
  */
 
 
@@ -38,13 +39,12 @@
 static void destroy(MP4AtomPtr s)
 {
 	MP4Err err;
-	MP4StereoVideoAtomPtr self;
+	MP4SubPictureRegionAtomPtr self;
 
-	self = (MP4StereoVideoAtomPtr)s;
+	self = (MP4SubPictureRegionAtomPtr)s;
 	if (self == NULL) 
 		BAILWITHERROR(MP4BadParamErr);
 		
-	DESTROY_ATOM_LIST_F(atomList);
 
 	if (self->super)
 		self->super->destroy(s);
@@ -56,29 +56,12 @@ bail:
 }
 
 
-static MP4Err addAtom(MP4StereoVideoAtomPtr self, MP4AtomPtr atom)
-{
-	MP4Err err;
-	err = MP4NoErr;
-
-	if (self == 0)
-		BAILWITHERROR(MP4BadParamErr);
-
-	err = MP4AddListEntry(atom, self->atomList); if (err) goto bail;
-
-bail:
-	TEST_RETURN(err);
-
-	return err;
-}
-
 static MP4Err serialize(struct MP4Atom* s, char* buffer)
 {
+
 	MP4Err err;
-	u32 tmp32;
-	u8 tmp8;
-	u32 i;
-	MP4StereoVideoAtomPtr self = (MP4StereoVideoAtomPtr)s;
+    u16 tmp16;
+	MP4SubPictureRegionAtomPtr self = (MP4SubPictureRegionAtomPtr)s;
 	err = MP4NoErr;
 
 	if (self->size > 0) {
@@ -86,17 +69,12 @@ static MP4Err serialize(struct MP4Atom* s, char* buffer)
 		err = MP4SerializeCommonFullAtomFields((MP4FullAtomPtr)self, buffer); if (err) goto bail;
 		buffer += self->bytesWritten;
 
-		tmp32 = (self->reserved << 2) + self->single_view_allowed;
-		PUT32_V(tmp32);
-		PUT32(stereo_scheme);
-		PUT32(length);
-		
-		for (i = 0; i < self->length; i++) {
-			tmp8 = self->stereo_indication_type[i];
-			PUT8_V(tmp8);
-		}
-
-		SERIALIZE_ATOM_LIST(atomList);
+        PUT16(objectX);
+        PUT16(objectY);
+        PUT16(objectWidth);
+        PUT16(objectHeight);
+        tmp16 = (self->reserved << 2) + (self->trackNotAloneFlag << 1) + self->trackNotMergeableFlag;
+        PUT16_V(tmp16);
 
 		assert(self->bytesWritten == self->size);
 
@@ -109,15 +87,16 @@ bail:
 }
 
 
+
 static MP4Err calculateSize(struct MP4Atom* s)
 {
 	MP4Err err;
-	MP4StereoVideoAtomPtr self = (MP4StereoVideoAtomPtr)s;
+	MP4SubPictureRegionAtomPtr self = (MP4SubPictureRegionAtomPtr)s;
 	err = MP4NoErr;
 
 	err = MP4CalculateFullAtomFieldSize((MP4FullAtomPtr)s); if (err) goto bail;
 
-	self->size += (3 * 4) + self->length;
+	self->size += (5 * 2);
 
 bail:
 	TEST_RETURN(err);
@@ -129,10 +108,9 @@ bail:
 static MP4Err createFromInputStream(MP4AtomPtr s, MP4AtomPtr proto, MP4InputStreamPtr inputStream)
 {
 	MP4Err err;
-	u32 i;
-	u32 tmp32;
+	u16 tmp16;
 
-	MP4StereoVideoAtomPtr self = (MP4StereoVideoAtomPtr)s;
+	MP4SubPictureRegionAtomPtr self = (MP4SubPictureRegionAtomPtr)s;
 
 	err = MP4NoErr;
 	if (self == NULL)	
@@ -140,15 +118,14 @@ static MP4Err createFromInputStream(MP4AtomPtr s, MP4AtomPtr proto, MP4InputStre
 		
 	err = self->super->createFromInputStream(s, proto, (char*)inputStream);
 
-	GET32_V(tmp32);
-	self->reserved = (tmp32 >> 2) & 0x3FFFFFFF;
-	self->single_view_allowed = (u8)(tmp32 & 0x3);
-	GET32(stereo_scheme);
-	GET32(length);
-	self->stereo_indication_type = calloc(self->length, sizeof(u8));
-	for (i = 0; i < self->length; i++) {
-		GET8_V(self->stereo_indication_type[i]);
-	}
+    GET16(objectX);
+    GET16(objectY);
+    GET16(objectWidth);
+    GET16(objectHeight);
+	GET16_V(tmp16);
+	self->reserved = (tmp16 >> 2) & 0x3FFF;
+    self->trackNotAloneFlag = (u8)((tmp16 >> 1) & 0x1);
+	self->trackNotMergeableFlag = (u8)(tmp16 & 0x1);
 
 	assert(self->bytesRead == self->size);
 bail:
@@ -158,32 +135,26 @@ bail:
 }
 
 
-MP4Err MP4CreateStereoVideoAtom(MP4StereoVideoAtomPtr *outAtom)
+
+MP4Err MP4CreateSubPictureRegionAtom(MP4SubPictureRegionAtomPtr *outAtom)
 {
 	MP4Err err;
-	MP4StereoVideoAtomPtr self;
+	MP4SubPictureRegionAtomPtr self;
 
-	self = (MP4StereoVideoAtomPtr)calloc(1, sizeof(MP4StereoVideoAtom));
+	self = (MP4StereoVideoAtomPtr)calloc(1, sizeof(MP4SubPictureRegionAtom));
 	TESTMALLOC(self);
 	
 	err = MP4CreateFullAtom((MP4AtomPtr)self); if (err) goto bail;
 	
-	self->type						= MP4StereoVideoAtomType;
-	self->name						= "StereoVideoBox";
+	self->type						= MP4SubPictureRegionAtomType;
+	self->name						= "SubPictureRegionBox";
 	self->destroy					= destroy;
 	self->createFromInputStream		= (cisfunc)createFromInputStream;
 	self->calculateSize				= calculateSize;
 	self->serialize					= serialize;
-	self->addAtom					= addAtom;
-
-	err = MP4MakeLinkedList(&self->atomList); if (err) goto bail;
-
-	/*
-	self->stereo_indication_type = (u8*)calloc(1, sizeof(u8));
-	TESTMALLOC(self->stereo_indication_type);
-	*/
 
 	*outAtom = self;
+    
 bail:
 	TEST_RETURN(err);
 
